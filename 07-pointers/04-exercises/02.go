@@ -27,7 +27,7 @@ type person struct {
 	age                 int
 }
 
-func (p *person) changeMe() {
+func changeMe(p *person) {
 	p.firstName = "Dr."
 	p.lastName = "No"
 	p.age = 24
@@ -42,7 +42,7 @@ func main() {
 
 	fmt.Println(james)
 
-	james.changeMe()
+	changeMe(&james)
 
 	fmt.Println(james)
 }
