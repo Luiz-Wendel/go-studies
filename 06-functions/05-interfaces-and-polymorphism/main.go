@@ -22,6 +22,7 @@ func (p person) speak() {
 
 // to create an interface you need to define a new `type` as an `interface` type
 // inside the block scope of an `interface` you define which methods the variable needs to have to be of the new interface type
+// if the method returns something, you have to specify the return type for the method as well. ex.: speak() string
 type human interface {
 	speak()
 }
