@@ -102,32 +102,16 @@ func (s *store) Add(p product) {
 func main() {
 	s1 := newStore()
 
-	p1 := product{
-		productType: small,
-		name:        "pen",
-		price:       4,
-	}
-	p2 := product{
-		productType: medium,
-		name:        "paper",
-		price:       10,
-	}
-	p3 := product{
-		productType: big,
-		name:        "desk",
-		price:       490,
-	}
+	p1 := newProduct(small, "pen", 4)
+	p2 := newProduct(medium, "paper", 10)
+	p3 := newProduct(big, "desk", 490)
 
-	fmt.Println(p1.GetCost())
-	fmt.Println(p2.GetCost())
-	fmt.Println(p3.GetCost())
-
-	fmt.Println(s1)
+	fmt.Println("Store (empty):", s1)
 
 	s1.Add(p1)
 	s1.Add(p2)
 	s1.Add(p3)
 
-	fmt.Println(s1)
-	fmt.Println(s1.Total())
+	fmt.Println("Store (filled):", s1)
+	fmt.Println("Total price:", s1.Total())
 }
