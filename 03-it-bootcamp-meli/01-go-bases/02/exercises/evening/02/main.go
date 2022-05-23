@@ -57,11 +57,7 @@ type Ecommerce interface {
 }
 
 func newProduct(productType, name string, price uint) product {
-	return product{
-		productType: productType,
-		name:        name,
-		price:       price,
-	}
+	return product{productType, name, price}
 }
 
 func newStore() store {
