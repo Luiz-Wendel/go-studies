@@ -30,6 +30,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"sort"
 )
 
 const (
@@ -66,15 +67,9 @@ func getOperationFunction(operation string) (func(numbers ...int) int, error) {
 }
 
 func getMinimum(numbers ...int) int {
-	min := numbers[0]
+	sort.Ints(numbers)
 
-	for _, number := range numbers {
-		if number < min {
-			min = number
-		}
-	}
-
-	return min
+	return numbers[0]
 }
 
 func getAverage(numbers ...int) int {
@@ -88,13 +83,7 @@ func getAverage(numbers ...int) int {
 }
 
 func getMaximum(numbers ...int) int {
-	max := numbers[0]
+	sort.Ints(numbers)
 
-	for _, number := range numbers {
-		if number > max {
-			max = number
-		}
-	}
-
-	return max
+	return numbers[len(numbers)-1]
 }
