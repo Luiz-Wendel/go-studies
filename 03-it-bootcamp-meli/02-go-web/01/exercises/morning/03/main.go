@@ -20,9 +20,14 @@ import (
 )
 
 type user struct {
-	Id, FirstName, LastName, Email, CreationDate string
-	Age, Height                                  uint
-	Active                                       bool
+	Id           string `json:"id"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Email        string `json:"email"`
+	CreationDate string `json:"creationDate"`
+	Age          uint   `json:"age"`
+	Height       uint   `json:"height"`
+	Active       bool   `json:"active"`
 }
 
 func getFileContent(file string) []byte {

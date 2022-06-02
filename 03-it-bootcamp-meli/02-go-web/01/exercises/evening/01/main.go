@@ -16,14 +16,20 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type user struct {
-	Id, FirstName, LastName, Email, CreationDate string
-	Age, Height                                  uint
-	Active                                       bool
+	Id           string `json:"id"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Email        string `json:"email"`
+	CreationDate string `json:"creationDate"`
+	Age          uint   `json:"age"`
+	Height       uint   `json:"height"`
+	Active       bool   `json:"active"`
 }
 
 func getFileContent(file string) []byte {
@@ -43,14 +49,14 @@ func serializeJson(content []byte, variable interface{}) {
 }
 
 var fields = []string{
-	"Id",
-	"FirstName",
-	"LastName",
-	"Email",
-	"Age",
-	"Height",
-	"Active",
-	"CreationDate",
+	"id",
+	"firstName",
+	"lastName",
+	"email",
+	"age",
+	"height",
+	"active",
+	"creationDate",
 }
 
 func getFilters(c *gin.Context) map[string]string {
@@ -73,7 +79,7 @@ func filterPayload(payload []user, filters map[string]string) []user {
 		reflectedUser := reflect.ValueOf(user)
 
 		for filter, value := range filters {
-			userValue := fmt.Sprintf("%v", reflectedUser.FieldByName(filter))
+			userValue := fmt.Sprintf("%v", reflectedUser.FieldByName(strings.Title(filter)))
 
 			isValid = userValue == value
 		}

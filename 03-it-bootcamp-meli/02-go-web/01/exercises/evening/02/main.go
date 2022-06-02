@@ -17,19 +17,26 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type user struct {
-	Id, FirstName, LastName, Email, CreationDate string
-	Age, Height                                  uint
-	Active                                       bool
+	Id           string `json:"id"`
+	FirstName    string `json:"firstName"`
+	LastName     string `json:"lastName"`
+	Email        string `json:"email"`
+	CreationDate string `json:"creationDate"`
+	Age          uint   `json:"age"`
+	Height       uint   `json:"height"`
+	Active       bool   `json:"active"`
 }
 
 func getFileContent(file string) []byte {
@@ -49,14 +56,14 @@ func serializeJson(content []byte, variable interface{}) {
 }
 
 var fields = []string{
-	"Id",
-	"FirstName",
-	"LastName",
-	"Email",
-	"Age",
-	"Height",
-	"Active",
-	"CreationDate",
+	"id",
+	"firstName",
+	"lastName",
+	"email",
+	"age",
+	"height",
+	"active",
+	"creationDate",
 }
 
 func getFilters(c *gin.Context) map[string]string {
@@ -79,7 +86,7 @@ func filterPayload(payload []user, filters map[string]string) []user {
 		reflectedUser := reflect.ValueOf(user)
 
 		for filter, value := range filters {
-			userValue := fmt.Sprintf("%v", reflectedUser.FieldByName(filter))
+			userValue := fmt.Sprintf("%v", reflectedUser.FieldByName(strings.Title(filter)))
 
 			isValid = userValue == value
 		}
@@ -110,6 +117,16 @@ func GetAll(c *gin.Context) {
 	})
 }
 
+func getUserById(payload []user, id string) (user, error) {
+	for _, user := range payload {
+		if user.Id == id {
+			return user, nil
+		}
+	}
+
+	return user{}, errors.New("user not found")
+}
+
 func GetById(c *gin.Context) {
 	content := getFileContent("./03-it-bootcamp-meli/02-go-web/01/exercises/morning/01/users.json")
 
@@ -119,17 +136,16 @@ func GetById(c *gin.Context) {
 
 	id := c.Param("id")
 
-	for _, user := range payload {
-		if user.Id == id {
-			c.JSON(http.StatusOK, gin.H{
-				"message": user,
-			})
-			return
-		}
+	user, err := getUserById(payload, id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+		return
 	}
 
-	c.JSON(http.StatusNotFound, gin.H{
-		"message": "user not found",
+	c.JSON(http.StatusOK, gin.H{
+		"message": user,
 	})
 }
 
