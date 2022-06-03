@@ -1,0 +1,22 @@
+[
+  {
+    "id": "xpto",
+    "firstName": "John",
+    "lastName":"Doe",
+    "email": "john.doe@gmail.com",
+    "age": 27,
+    "height": 182,
+    "active": true,
+    "creationDate": "01/06/2022"
+  },
+  {
+    "id": "r2d2",
+    "firstName": "Jane",
+    "lastName":"Doe",
+    "email": "jane.doe@gmail.com",
+    "age": 72,
+    "height": 128,
+    "active": false,
+    "creationDate": "28/05/2022"
+  }
+]
