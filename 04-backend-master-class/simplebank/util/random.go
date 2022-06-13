@@ -34,3 +34,21 @@ func RandomString(size int) string {
 
 	return stringBuilder.String()
 }
+
+// RandomOwner generates a random owner name with `6` characters
+func RandomOwner() string {
+	return RandomString(6)
+}
+
+// RandomMoney generates a random amount of money between `0` and `10000`
+func RandomMoney() int64 {
+	return RandomInt(0, 10000)
+}
+
+// RandomCurrency generates a random currency code from
+func RandomCurrency() string {
+	currencies := []string{"USD", "EUR", "CAD", "BRL"}
+	currenciesLength := len(currencies)
+
+	return currencies[rand.Intn(currenciesLength)]
+}
