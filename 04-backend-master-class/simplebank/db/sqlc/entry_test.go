@@ -48,3 +48,27 @@ func TestGetEntry(t *testing.T) {
 	require.Equal(t, createdEntry.Amount, recoveredEntry.Amount)
 	require.WithinDuration(t, createdEntry.CreatedAt, recoveredEntry.CreatedAt, time.Second)
 }
+
+func TestListEntries(t *testing.T) {
+	createdAccount := CreateRandomAccount(t)
+
+	const SIZE = 5
+
+	for index := 0; index < SIZE*2; index++ {
+		createRandomEntry(t, createdAccount.ID)
+	}
+
+	arg := ListEntriesParams{
+		AccountID: createdAccount.ID,
+		Limit:     SIZE,
+		Offset:    SIZE,
+	}
+
+	entries, err := testQueries.ListEntries(context.Background(), arg)
+	require.NoError(t, err)
+	require.Len(t, entries, SIZE)
+
+	for _, entry := range entries {
+		require.NotEmpty(t, entry)
+	}
+}
