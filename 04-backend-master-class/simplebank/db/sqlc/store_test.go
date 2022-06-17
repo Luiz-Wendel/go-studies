@@ -32,6 +32,8 @@ func TestTransferTransaction(t *testing.T) {
 		}()
 	}
 
+	// check results
+	existed := make(map[int]bool)
 	for index := 0; index < n; index++ {
 		err := <-errors
 		require.NoError(t, err)
@@ -74,6 +76,35 @@ func TestTransferTransaction(t *testing.T) {
 		_, err = store.GetEntry(context.Background(), toEntry.ID)
 		require.NoError(t, err)
 
-		// TODO: check amounts' balance
+		// check accounts
+		resultFromAccount := result.FromAccount
+		require.NotEmpty(t, resultFromAccount)
+		require.Equal(t, fromAccount.ID, resultFromAccount.ID)
+
+		resultToAccount := result.ToAccount
+		require.NotEmpty(t, resultToAccount)
+		require.Equal(t, toAccount.ID, resultToAccount.ID)
+
+		// check accounts' balance
+		diff1 := fromAccount.Balance - resultFromAccount.Balance
+		diff2 := resultToAccount.Balance - toAccount.Balance
+		require.Equal(t, diff1, diff2)
+		require.True(t, diff1 > 0)
+		require.True(t, diff1%amount == 0)
+
+		k := int(diff1 / amount)
+		require.True(t, k >= 1 && k <= n)
+		require.NotContains(t, existed, k)
+		existed[k] = true
 	}
+
+	// check the final updated balances
+	updatedFromAccount, err := testQueries.GetAccount(context.Background(), fromAccount.ID)
+	require.NoError(t, err)
+
+	updatedToAccount, err := testQueries.GetAccount(context.Background(), toAccount.ID)
+	require.NoError(t, err)
+
+	require.Equal(t, fromAccount.Balance-int64(n)*amount, updatedFromAccount.Balance)
+	require.Equal(t, toAccount.Balance+int64(n)*amount, updatedToAccount.Balance)
 }
