@@ -108,3 +108,51 @@ func TestTransferTransaction(t *testing.T) {
 	require.Equal(t, fromAccount.Balance-int64(n)*amount, updatedFromAccount.Balance)
 	require.Equal(t, toAccount.Balance+int64(n)*amount, updatedToAccount.Balance)
 }
+
+func TestTransferTransactionDeadlock(t *testing.T) {
+	store := NewStore(testDB)
+
+	fromAccount := CreateRandomAccount(t)
+	toAccount := CreateRandomAccount(t)
+
+	n := 10
+	amount := int64(10)
+
+	errors := make(chan error)
+
+	for index := 0; index < n; index++ {
+		fromAccountID := fromAccount.ID
+		toAccountID := toAccount.ID
+
+		if index%2 == 0 {
+			fromAccountID = toAccount.ID
+			toAccountID = fromAccount.ID
+		}
+
+		go func() {
+			_, err := store.TransferTransaction(context.Background(), TransferTransactionParams{
+				FromAccountID: fromAccountID,
+				ToAccountID:   toAccountID,
+				Amount:        amount,
+			})
+
+			errors <- err
+		}()
+	}
+
+	// check errors
+	for index := 0; index < n; index++ {
+		err := <-errors
+		require.NoError(t, err)
+	}
+
+	// check the final updated balances
+	updatedFromAccount, err := testQueries.GetAccount(context.Background(), fromAccount.ID)
+	require.NoError(t, err)
+
+	updatedToAccount, err := testQueries.GetAccount(context.Background(), toAccount.ID)
+	require.NoError(t, err)
+
+	require.Equal(t, fromAccount.Balance, updatedFromAccount.Balance)
+	require.Equal(t, toAccount.Balance, updatedToAccount.Balance)
+}
